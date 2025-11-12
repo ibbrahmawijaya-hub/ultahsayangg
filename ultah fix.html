@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Selamat Ulang Tahun!</title>
+    <style>
+        /* --- CSS Global & Reset --- */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #fce4ec; /* Warna latar belakang lembut */
+            color: #4a4a4a;
+            scroll-behavior: smooth;
+            overflow-x: hidden;
+        }
+
+        /* --- HALAMAN PIN (DEFAULT) --- */
+        .pin-page {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #ffcdd2; /* Pink muda */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            transition: opacity 1s ease-in-out;
+        }
+
+        .profile-frame {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 5px solid #e91e63; /* Border merah muda */
+            margin-bottom: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .profile-frame img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .pin-display {
+            font-size: 2em;
+            letter-spacing: 10px;
+            margin-bottom: 30px;
+            height: 40px;
+            color: #d81b60;
+        }
+
+        .keypad {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            width: 300px;
+        }
+
+        .keypad button {
+            background-color: #f8bbd0;
+            border: none;
+            color: #880e4f;
+            padding: 20px;
+            font-size: 1.5em;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background-color 0.1s;
+        }
+
+        .keypad button:hover {
+            background-color: #e91e63;
+            color: white;
+        }
+
+        .delete-btn {
+            background-color: transparent !important;
+            color: #e91e63 !important;
+            font-size: 1em !important;
+            grid-column: 2 / span 1; /* Posisikan tombol 'Hapus' di tengah bawah */
+        }
+        
+        /* --- HALAMAN UTAMA (Konten Tersembunyi) --- */
+        .main-content {
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+            min-height: 100vh;
+            padding-bottom: 100px; /* Ruang untuk scroll */
+        }
+
+        .header-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 80px 20px 40px;
+            text-align: center;
+            background: linear-gradient(135deg, #f06292 0%, #ffcdd2 100%);
+            color: white;
+        }
+
+        .header-image-container {
+            width: 250px;
+            height: 250px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 8px solid white;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+            margin-bottom: 30px;
+            animation: zoomIn 1s ease-out;
+        }
+
+        .header-image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        @keyframes zoomIn {
+            from { transform: scale(0.5); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .happy-birthday-text {
+            font-size: 3em;
+            font-weight: bold;
+            letter-spacing: 5px;
+            margin-bottom: 50px;
+            white-space: nowrap; /* Tampilan horizontal */
+            animation: slideIn 1.5s ease-out;
+            text-shadow: 2px 2px #d81b60;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(-100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        /* --- PROFIL/MENU --- */
+        .bubble-menu {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            padding: 40px 20px;
+            background-color: #f8bbd0;
+            border-radius: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            margin: 40px auto;
+            max-width: 800px;
+        }
+
+        .bubble {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 120px;
+            height: 120px;
+            background-color: white;
+            border-radius: 50%;
+            color: #e91e63;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+            text-align: center;
+            font-size: 0.9em;
+        }
+
+        .bubble:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .bubble span {
+            margin-top: 5px;
+        }
+
+        /* --- MODAL (TAMPILAN TERBUKA) --- */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: none; /* Default tersembunyi */
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 90%;
+            max-height: 80%;
+            overflow-y: auto;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            transform: scale(0.5); /* Awal animasi */
+            opacity: 0;
+            transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55), opacity 0.3s ease-in-out;
+            text-align: center;
+        }
+
+        .modal.active .modal-content {
+            transform: scale(1); /* Akhir animasi */
+            opacity: 1;
+        }
+
+        .modal-content h3 {
+            color: #e91e63;
+            margin-top: 0;
+            font-size: 1.8em;
+        }
+
+        .modal-content p {
+            line-height: 1.6;
+            color: #555;
+            font-size: 1.1em;
+        }
+
+        .modal-content img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            margin-top: 15px;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 25px;
+            color: white;
+            font-size: 30px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .close-btn:hover {
+            color: #f8bbd0;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="pin-page" id="pinPage">
+        <div class="profile-frame">
+            <img src="c:\Users\ASPERS K3\Downloads\foto 5.jfif" alt="Foto Ulang Tahun">
+        </div>
+        <p style="color: #d81b60; font-size: 1.2em; margin-bottom: 10px;">Masukkan Kode Pin</p>
+        <div class="pin-display" id="pinDisplay"></div>
+        <div class="keypad">
+            <button onclick="appendPin('1')">1</button>
+            <button onclick="appendPin('2')">2</button>
+            <button onclick="appendPin('3')">3</button>
+            <button onclick="appendPin('4')">4</button>
+            <button onclick="appendPin('5')">5</button>
+            <button onclick="appendPin('6')">6</button>
+            <button onclick="appendPin('7')">7</button>
+            <button onclick="appendPin('8')">8</button>
+            <button onclick="appendPin('9')">9</button>
+            <div style="grid-column: 1 / span 1;"></div> 
+            <button onclick="appendPin('0')">0</button>
+            <button class="delete-btn" onclick="deletePin()">Hapus</button>
+        </div>
+    </div>
+
+    <div class="main-content" id="mainContent">
+        <header class="header-content">
+            <div class="header-image-container">
+                <img src="c:\Users\ASPERS K3\Downloads\foto 6.jpeg" alt="Foto Ulang Tahun">
+            </div>
+            <h1 class="happy-birthday-text">Happy Birthday!</h1>
+        </header>
+
+        <section class="bubble-menu">
+            <div class="bubble" onclick="openModal('profil')">
+                <span style="font-size: 2em;">👤</span>
+                <span>Profil</span>
+            </div>
+            <div class="bubble" onclick="openModal('twentyfour')">
+                <span style="font-size: 2em;">🖼️</span>
+                <span>Twenty Four</span>
+            </div>
+            <div class="bubble" onclick="openModal('readme')">
+                <span style="font-size: 2em;">💌</span>
+                <span>Read Me</span>
+            </div>
+        </section>
+        
+        <div style="padding: 20px; text-align: center; color: #d81b60;">
+            <p>Geser ke bawah untuk melihat lebih banyak memori...</p>
+            <h2 style="margin-top: 50px;">Momen Indah Bersama</h2>
+            <div style="height: 500px; background-color: #ffe0b2; border-radius: 10px; margin: 20px auto; max-width: 600px; display: flex; align-items: center; justify-content: center; color: #bf360c;">
+             <img src="c:\Users\ASPERS K3\Downloads\foto 2.jfif" alt="Momen Indah Bersama" style="max-width: 300px;">
+            </div>
+        </div>
+    </div>
+
+    <div id="profilModal" class="modal" onclick="closeModal('profilModal')">
+        <span class="close-btn" onclick="closeModal('profilModal')">&times;</span>
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <h3>Sifat Istimewa Dirimu</h3>
+            <p>Kau adalah wanita yang penuh semangat, memiliki tekad sekeras baja namun hati selembut sutra. Kau selalu optimis, dan meskipun terkadang keras kepala dalam prinsipmu, sifat inilah yang membuatmu selalu jujur dan menjadi inspirasi bagi semua yang mengenalmu. Kehadiranmu membawa energi yang tak pernah habis!</p>
+        </div>
+    </div>
+
+    <div id="twentyfourModal" class="modal" onclick="closeModal('twentyfourModal')">
+        <span class="close-btn" onclick="closeModal('twentyfourModal')">&times;</span>
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <h3>Senyum Terbaikmu</h3>
+            <img src="c:\Users\ASPERS K3\Downloads\foto 4.jfif" alt="Foto Twenty Four" style="max-width: 300px;">
+            <p style="margin-top: 20px;">Selamat Ulang Tahun Sayang, semoga panjang umur dan sehat selalu!</p>
+        </div>
+    </div>
+
+    <div id="readmeModal" class="modal" onclick="closeModal('readmeModal')">
+        <span class="close-btn" onclick="closeModal('readmeModal')">&times;</span>
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <h3>Pesan Khusus Dariku</h3>
+            <p>Selamat ulang tahun, sayang! Terima kasih sudah menjadi alasan utama senyumku setiap hari. Di hari yang spesial ini, aku berdoa agar semua yang terbaik datang padamu. Aku mencintaimu lebih dari kata-kata yang bisa kuungkapkan. Mari kita ciptakan lebih banyak kenangan indah di tahun-tahun mendatang!</p>
+            <p style="font-style: italic; margin-top: 20px;">Dengan seluruh cinta dan hati.</p>
+        </div>
+    </div>
+
+    <script>
+        const CORRECT_PIN = "181101";
+        let enteredPin = "";
+
+        const pinDisplay = document.getElementById('pinDisplay');
+        const pinPage = document.getElementById('pinPage');
+        const mainContent = document.getElementById('mainContent');
+
+        function updatePinDisplay() {
+            // Tampilkan pin sebagai bintang atau titik
+            pinDisplay.textContent = '•'.repeat(enteredPin.length);
+            
+            // Periksa pin jika panjangnya sudah sama
+            if (enteredPin.length === CORRECT_PIN.length) {
+                checkPin();
+            }
+        }
+
+        function appendPin(number) {
+            if (enteredPin.length < CORRECT_PIN.length) {
+                enteredPin += number;
+                updatePinDisplay();
+            }
+        }
+
+        function deletePin() {
+            enteredPin = enteredPin.slice(0, -1);
+            updatePinDisplay();
+        }
+
+        function checkPin() {
+            if (enteredPin === CORRECT_PIN) {
+                // Animasi terbuka halaman utama
+                pinPage.style.opacity = '0';
+                setTimeout(() => {
+                    pinPage.style.display = 'none';
+                    mainContent.style.opacity = '1';
+                    // Scroll ke bagian atas konten utama
+                    window.scrollTo(0, 0); 
+                }, 1000); // Sesuai dengan durasi transisi CSS
+            } else {
+                // Pin salah: Guncang display dan reset
+                pinDisplay.style.color = 'red';
+                setTimeout(() => {
+                    pinDisplay.style.color = '#d81b60';
+                    enteredPin = "";
+                    updatePinDisplay();
+                    alert('Kode Pin Salah. Silakan coba lagi.');
+                }, 500);
+            }
+        }
+
+        function openModal(type) {
+            const modalId = type + 'Modal';
+            const modal = document.getElementById(modalId);
+            modal.style.display = 'flex';
+            // Aktifkan animasi terbuka
+            setTimeout(() => {
+                modal.classList.add('active');
+            }, 10);
+        }
+
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            // Hilangkan animasi
+            modal.classList.remove('active');
+            // Sembunyikan setelah animasi selesai
+            setTimeout(() => {
+                modal.style.display = 'none';
+            }, 500); // Sesuai dengan durasi transisi modal-content CSS
+        }
+    </script>
+
+</body>
+</html>
